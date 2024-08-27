@@ -1,38 +1,47 @@
 import { useState } from "react";
 import "./App.module.css";
-import Buttons from "../Buttons/Buttons";
+import Options from "../Options/Options";
 import Description from "../Description/Description";
+import Feedback from "../Feedback/Feedback";
+import Notification from "../Notification/Notification";
 
 export default function App() {
-  const [clicks, setClicks] = useState(0);
-  const [values, setValues] = useState({
+  const [feedback, setFeedback] = useState({
     good: 0,
     neutral: 0,
     bad: 0,
   });
 
-  const updateClicks = () => {
-    setClicks(clicks + 1);
+  const updateFeedback = (feedbackType) => {
+    setFeedback((prevFeedback) => ({
+      ...prevFeedback,
+      [feedbackType]: prevFeedback[feedbackType] + 1,
+    }));
   };
 
-  const resetClicks = () => {
-    setClicks(0);
-  };
+  const totalFeedback = feedback.good + feedback.neutral + feedback.bad;
 
-  const updateValues = () => {
-    setValues({
-      ...values,
-      good: 1,
+  const resetFeedback = () => {
+    setFeedback({
+      good: 0,
+      neutral: 0,
+      bad: 0,
     });
   };
 
   return (
     <>
       <Description />
-      <Buttons value={clicks} onUpdate={updateClicks} />
-      <Buttons value={clicks} onUpdate={updateClicks} />
-      <button onClick={updateValues}>clicks{values.good + 1}</button>
-      <button onClick={resetClicks}>reset clicks</button>
+      <Options
+        updateFeedback={updateFeedback}
+        resetFeedback={resetFeedback}
+        totalFeedback={totalFeedback}
+      />
+      {totalFeedback > 0 ? (
+        <Feedback feedback={feedback} total={totalFeedback} />
+      ) : (
+        <Notification message="No feedback yet" />
+      )}
     </>
   );
 }
